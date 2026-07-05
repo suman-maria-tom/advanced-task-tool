@@ -1,0 +1,16 @@
+package com.example.demo.repository;
+
+import com.example.demo.model.Task;
+import com.example.demo.model.TaskPriority;
+import com.example.demo.model.TaskStatus;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface TaskRepository extends JpaRepository<Task, Long> {
+    // Custom query methods generated automatically by Spring based on method names!
+    List<Task> findByStatus(TaskStatus status);
+    List<Task> findByPriority(TaskPriority priority);
+}
