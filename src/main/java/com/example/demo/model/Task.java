@@ -1,10 +1,12 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "tasks")
@@ -34,6 +36,23 @@ public class Task {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "task_dependencies",
+            joinColumns = @JoinColumn(name = "task_id"),
+            inverseJoinColumns = @JoinColumn(name = "dependency_id")
+    )
+    @JsonIgnoreProperties({"dependencies", "blockedTasks"})
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<Task> dependencies = new HashSet<>();
+
+    @ManyToMany(mappedBy = "dependencies", fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"dependencies", "blockedTasks"})
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<Task> blockedTasks = new HashSet<>();
 
     @PrePersist
     protected void onCreate() {

@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Task;
+import com.example.demo.model.TaskStatus;
 import com.example.demo.service.TaskService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,5 +44,20 @@ public class TaskController {
     public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
         taskService.deleteTask(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/dependencies/{dependencyId}")
+    public ResponseEntity<Task> addDependency(@PathVariable Long id, @PathVariable Long dependencyId) {
+        return ResponseEntity.ok(taskService.addDependency(id, dependencyId));
+    }
+
+    @GetMapping("/{id}/urgency")
+    public ResponseEntity<Double> getUrgencyScore(@PathVariable Long id) {
+        return ResponseEntity.ok(taskService.getTaskUrgency(id));
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<Task> updateStatus(@PathVariable Long id, @RequestParam TaskStatus status) {
+        return ResponseEntity.ok(taskService.updateTaskStatus(id, status));
     }
 }
