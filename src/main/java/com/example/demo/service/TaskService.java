@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.service.kafka.KafkaProducerService;
 import com.example.demo.model.Task;
 import com.example.demo.repository.TaskRepository;
 import org.springframework.stereotype.Service;
@@ -10,14 +11,17 @@ import java.lang.RuntimeException;
 public class TaskService {
 
     private final TaskRepository taskRepository;
+    private final KafkaProducerService kafkaProducerService;
 
-    // Constructor injection (Best practice for Spring Dependency Injection)
-    public TaskService(TaskRepository taskRepository) {
+    public TaskService(TaskRepository taskRepository, KafkaProducerService kafkaProducerService) {
         this.taskRepository = taskRepository;
+        this.kafkaProducerService = kafkaProducerService;
     }
 
     public Task createTask(Task task) {
-        return taskRepository.save(task);
+        Task savedTask = taskRepository.save(task);
+        kafkaProducerService.sendTaskEvent("TASK_CREATED: ID " + savedTask.getId() + " - " + savedTask.getTitle());
+        return savedTask;
     }
 
     public List<Task> getAllTasks() {
@@ -38,7 +42,9 @@ public class TaskService {
         existingTask.setStatus(updatedTask.getStatus());
         existingTask.setDueDate(updatedTask.getDueDate());
 
-        return taskRepository.save(existingTask);
+        Task savedTask = taskRepository.save(existingTask);
+        kafkaProducerService.sendTaskEvent("TASK_UPDATED: ID " + savedTask.getId() + " - status changed to " + savedTask.getStatus());
+        return savedTask;
     }
 
     public void deleteTask(Long id) {

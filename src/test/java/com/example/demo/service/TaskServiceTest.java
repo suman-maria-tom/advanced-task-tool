@@ -4,6 +4,7 @@ import com.example.demo.model.Task;
 import com.example.demo.model.TaskPriority;
 import com.example.demo.model.TaskStatus;
 import com.example.demo.repository.TaskRepository;
+import com.example.demo.service.kafka.KafkaProducerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +19,8 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TaskServiceTest {
-
+    @Mock
+    private KafkaProducerService kafkaProducerService;
     @Mock
     private TaskRepository taskRepository;
 
